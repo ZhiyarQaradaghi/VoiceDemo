@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { CssBaseline, ThemeProvider, createTheme, Box } from "@mui/material";
+import {
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  Box,
+  useMediaQuery,
+  IconButton,
+  Drawer,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { io } from "socket.io-client";
 import Login from "./components/Login";
 import ChannelList from "./components/ChannelList";
@@ -20,6 +29,10 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [channels, setChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const isMobile = useMediaQuery(darkTheme.breakpoints.down("sm"));
+
   useEffect(() => {
     const newSocket = io(SOCKET_SERVER);
     setSocket(newSocket);
@@ -49,6 +62,15 @@ function App() {
 
     setCurrentChannel(channelId);
     socket.emit("join-channel", channelId, username);
+
+    // Close drawer after channel selection on mobile
+    if (isMobile) {
+      setDrawerOpen(false);
+    }
+  };
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   return (
@@ -59,17 +81,70 @@ function App() {
           <Login onLogin={handleLogin} />
         ) : (
           <Box sx={{ display: "flex", height: "100vh", width: "100%" }}>
-            <ChannelList
-              channels={channels}
-              onJoinChannel={handleJoinChannel}
-              currentChannel={currentChannel}
-            />
+            {/* Mobile menu button */}
+            {isMobile && currentChannel && (
+              <IconButton
+                color="primary"
+                aria-label="open channels"
+                onClick={toggleDrawer}
+                sx={{
+                  position: "absolute",
+                  top: 10,
+                  left: 10,
+                  zIndex: 1200,
+                  bgcolor: "background.paper",
+                  boxShadow: 2,
+                  "&:hover": { bgcolor: "background.default" },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+
+            {/* Channel list - drawer on mobile, sidebar on desktop */}
+            {isMobile ? (
+              <Drawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={toggleDrawer}
+                sx={{
+                  "& .MuiDrawer-paper": {
+                    width: 280,
+                    boxSizing: "border-box",
+                  },
+                }}
+              >
+                <ChannelList
+                  channels={channels}
+                  onJoinChannel={handleJoinChannel}
+                  currentChannel={currentChannel}
+                />
+              </Drawer>
+            ) : (
+              <ChannelList
+                channels={channels}
+                onJoinChannel={handleJoinChannel}
+                currentChannel={currentChannel}
+              />
+            )}
+
             {currentChannel && (
               <ChatRoom
                 socket={socket}
                 channelId={currentChannel}
                 username={username}
+                isMobile={isMobile}
               />
+            )}
+
+            {isMobile && !currentChannel && (
+              <Box sx={{ width: "100%" }}>
+                <ChannelList
+                  channels={channels}
+                  onJoinChannel={handleJoinChannel}
+                  currentChannel={currentChannel}
+                />
+              </Box>
             )}
           </Box>
         )}

@@ -129,7 +129,7 @@ const AudioWave = () => (
   </WaveContainer>
 );
 
-function ChatRoom({ socket, channelId, username }) {
+function ChatRoom({ socket, channelId, username, isMobile }) {
   const theme = useTheme();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -378,29 +378,24 @@ function ChatRoom({ socket, channelId, username }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100%",
         width: "100%",
-        position: "relative",
+        height: "100vh",
         overflow: "hidden",
-        backgroundColor: theme.palette.background.default,
-        backgroundImage: `radial-gradient(${alpha(
-          theme.palette.primary.main,
-          0.05
-        )} 1px, transparent 1px)`,
-        backgroundSize: "20px 20px",
+        position: "relative",
+        pt: isMobile ? 7 : 3,
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          position: "absolute",
-          top: 20,
-          left: 20,
-          width: 250,
-          maxHeight: "calc(100vh - 40px)",
+          p: 2,
+          width: isMobile ? "95%" : "90%",
+          maxWidth: 800,
+          maxHeight: isMobile ? 150 : 200,
+          mb: 2,
           overflow: "auto",
           borderRadius: 2,
-          bgcolor: alpha(theme.palette.background.paper, 0.8),
+          background: alpha(theme.palette.background.paper, 0.8),
           backdropFilter: "blur(10px)",
         }}
       >
@@ -462,8 +457,8 @@ function ChatRoom({ socket, channelId, username }) {
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
-          maxWidth: 800,
-          p: 3,
+          maxWidth: isMobile ? "95%" : 800,
+          p: isMobile ? 1 : 3,
         }}
       >
         <Zoom in={!!currentSpeaker} timeout={300}>
@@ -528,9 +523,9 @@ function ChatRoom({ socket, channelId, username }) {
         <Paper
           elevation={3}
           sx={{
-            p: 3,
+            p: isMobile ? 2 : 3,
             width: "100%",
-            maxWidth: 600,
+            maxWidth: isMobile ? "100%" : 600,
             mb: 3,
             borderRadius: 2,
             background: alpha(theme.palette.background.paper, 0.8),
@@ -598,7 +593,9 @@ function ChatRoom({ socket, channelId, username }) {
           elevation={3}
           sx={{
             p: 2,
-            mt: 4,
+            mt: 2,
+            width: "100%",
+            maxWidth: isMobile ? "100%" : 600,
             borderRadius: 3,
             background: alpha(theme.palette.background.paper, 0.7),
             backdropFilter: "blur(10px)",
@@ -612,7 +609,12 @@ function ChatRoom({ socket, channelId, username }) {
           >
             Quick Reactions
           </Typography>
-          <Stack direction="row" spacing={1} justifyContent="center">
+          <Stack
+            direction="row"
+            spacing={isMobile ? 0.5 : 1}
+            justifyContent="center"
+            flexWrap={isMobile ? "wrap" : "nowrap"}
+          >
             <ReactionButton
               emoji="👍"
               tooltip="Like"
@@ -674,11 +676,11 @@ function ChatRoom({ socket, channelId, username }) {
         open={chatOpen}
         onClose={toggleChat}
         sx={{
-          width: 350,
+          width: isMobile ? "100%" : 350,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 350,
-            borderRadius: "16px 0 0 16px",
+            width: isMobile ? "100%" : 350,
+            borderRadius: isMobile ? 0 : "16px 0 0 16px",
             boxShadow: "-5px 0 15px rgba(0,0,0,0.1)",
           },
         }}

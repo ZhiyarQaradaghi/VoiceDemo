@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip, useMediaQuery } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { keyframes } from "@emotion/react";
 
 const ReactionButton = ({ emoji, tooltip, type, onReact }) => {
   const theme = useTheme();
   const [animated, setAnimated] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClick = () => {
     setAnimated(true);
@@ -23,14 +24,15 @@ const ReactionButton = ({ emoji, tooltip, type, onReact }) => {
           display: "inline-flex",
           justifyContent: "center",
           alignItems: "center",
+          m: isMobile ? 0.5 : 0,
         }}
       >
         <IconButton
           onClick={handleClick}
           sx={{
             bgcolor: alpha(theme.palette.primary.main, 0.1),
-            p: 1.5,
-            fontSize: "1.5rem",
+            p: isMobile ? 1 : 1.5,
+            fontSize: isMobile ? "1.2rem" : "1.5rem",
             transition: "all 0.2s ease",
             transform: animated ? "scale(1.4)" : "scale(1)",
             "&:hover": {
@@ -55,13 +57,13 @@ const ReactionButton = ({ emoji, tooltip, type, onReact }) => {
               alignItems: "center",
             }}
           >
-            {[...Array(6)].map((_, i) => (
+            {[...Array(isMobile ? 4 : 6)].map((_, i) => (
               <Box
                 key={i}
                 sx={{
                   position: "absolute",
                   fontWeight: "bold",
-                  fontSize: "1.5rem",
+                  fontSize: isMobile ? "1.2rem" : "1.5rem",
                   opacity: 0,
                   animation: `${popOut} 1s ease-out forwards`,
                   animationDelay: `${i * 0.1}s`,
