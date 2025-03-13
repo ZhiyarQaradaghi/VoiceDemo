@@ -5,7 +5,7 @@ npm install
 npm run dev
 ```
 
-Dependencies:
+Dependencies used (backend as well):
 
 - [socket.io](https://socket.io/)
 - [socket.io-client](https://socket.io/docs/v4/client-api/)
